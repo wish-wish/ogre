@@ -159,7 +159,7 @@ void IntegratedPSSM3::setSplitPoints(const SplitPointList& newSplitPoints)
 //-----------------------------------------------------------------------
 bool IntegratedPSSM3::resolveParameters(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     Function* vsMain = vsProgram->getEntryPointFunction();
     Function* psMain = psProgram->getEntryPointFunction();
@@ -257,7 +257,7 @@ bool IntegratedPSSM3::resolveParameters(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool IntegratedPSSM3::resolveDependencies(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 
     vsProgram->addDependency(FFP_LIB_COMMON);
@@ -271,7 +271,7 @@ bool IntegratedPSSM3::resolveDependencies(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool IntegratedPSSM3::addFunctionInvocations(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram(); 
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM); 
     Function* vsMain = vsProgram->getEntryPointFunction();  
     Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     int internalCounter;

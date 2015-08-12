@@ -52,7 +52,7 @@ LinearSkinning::LinearSkinning() : HardwareSkinningTechnique()
 bool LinearSkinning::resolveParameters(ProgramSet* programSet)
 {
 
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     Function* vsMain = vsProgram->getEntryPointFunction();
 
     //if needed mark this vertex program as hardware skinned
@@ -144,7 +144,7 @@ bool LinearSkinning::resolveParameters(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool LinearSkinning::resolveDependencies(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     vsProgram->addDependency(FFP_LIB_COMMON);
     vsProgram->addDependency(FFP_LIB_TRANSFORM);
 
@@ -155,7 +155,7 @@ bool LinearSkinning::resolveDependencies(ProgramSet* programSet)
 bool LinearSkinning::addFunctionInvocations(ProgramSet* programSet)
 {
 
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     Function* vsMain = vsProgram->getEntryPointFunction();
     int internalCounter = 0;
 

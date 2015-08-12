@@ -223,7 +223,7 @@ bool PerPixelLighting::resolveParameters(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool PerPixelLighting::resolveGlobalParameters(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     Function* vsMain = vsProgram->getEntryPointFunction();
     Function* psMain = psProgram->getEntryPointFunction();
@@ -338,7 +338,7 @@ bool PerPixelLighting::resolveGlobalParameters(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool PerPixelLighting::resolvePerLightParameters(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     Function* vsMain = vsProgram->getEntryPointFunction();
     Function* psMain = psProgram->getEntryPointFunction();
@@ -440,7 +440,7 @@ bool PerPixelLighting::resolvePerLightParameters(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool PerPixelLighting::resolveDependencies(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 
     vsProgram->addDependency(FFP_LIB_COMMON);
@@ -455,7 +455,7 @@ bool PerPixelLighting::resolveDependencies(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool PerPixelLighting::addFunctionInvocations(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram(); 
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM); 
     Function* vsMain = vsProgram->getEntryPointFunction();  
     Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     Function* psMain = psProgram->getEntryPointFunction();  

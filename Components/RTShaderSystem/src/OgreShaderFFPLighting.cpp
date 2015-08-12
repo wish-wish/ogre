@@ -214,7 +214,7 @@ void FFPLighting::updateGpuProgramsParams(Renderable* rend, Pass* pass, const Au
 //-----------------------------------------------------------------------
 bool FFPLighting::resolveParameters(ProgramSet* programSet)
 {
-	Program* vsProgram = programSet->getCpuVertexProgram();
+	Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
 	Function* vsMain = vsProgram->getEntryPointFunction();
 	bool hasError = false;
 
@@ -379,7 +379,7 @@ bool FFPLighting::resolveParameters(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool FFPLighting::resolveDependencies(ProgramSet* programSet)
 {
-	Program* vsProgram = programSet->getCpuVertexProgram();
+	Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
 
 	vsProgram->addDependency(FFP_LIB_COMMON);
 	vsProgram->addDependency(FFP_LIB_LIGHTING);
@@ -390,7 +390,7 @@ bool FFPLighting::resolveDependencies(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool FFPLighting::addFunctionInvocations(ProgramSet* programSet)
 {
-	Program* vsProgram = programSet->getCpuVertexProgram();	
+	Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);	
 	Function* vsMain = vsProgram->getEntryPointFunction();	
 	
 	int internalCounter = 0;

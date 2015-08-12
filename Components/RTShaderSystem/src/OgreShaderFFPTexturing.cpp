@@ -88,8 +88,8 @@ bool FFPTexturing::resolveParameters(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool FFPTexturing::resolveUniformParams(TextureUnitParams* textureUnitParams, ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
-    Program* psProgram = programSet->getCpuFragmentProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
+    Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     bool hasError = false;
     
     // Resolve texture matrix parameter.
@@ -165,8 +165,8 @@ bool FFPTexturing::resolveUniformParams(TextureUnitParams* textureUnitParams, Pr
 //-----------------------------------------------------------------------
 bool FFPTexturing::resolveFunctionsParams(TextureUnitParams* textureUnitParams, ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
-    Program* psProgram = programSet->getCpuFragmentProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
+    Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     Function* vsMain   = vsProgram->getEntryPointFunction();
     Function* psMain   = psProgram->getEntryPointFunction();
     Parameter::Content texCoordContent = Parameter::SPC_UNKNOWN;
@@ -257,8 +257,8 @@ bool FFPTexturing::resolveFunctionsParams(TextureUnitParams* textureUnitParams, 
 //-----------------------------------------------------------------------
 bool FFPTexturing::resolveDependencies(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
-    Program* psProgram = programSet->getCpuFragmentProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
+    Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 
     vsProgram->addDependency(FFP_LIB_COMMON);
     vsProgram->addDependency(FFP_LIB_TEXTURING);    
@@ -271,8 +271,8 @@ bool FFPTexturing::resolveDependencies(ProgramSet* programSet)
 //-----------------------------------------------------------------------
 bool FFPTexturing::addFunctionInvocations(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
-    Program* psProgram = programSet->getCpuFragmentProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
+    Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     Function* vsMain   = vsProgram->getEntryPointFunction();
     Function* psMain   = psProgram->getEntryPointFunction();
     int internalCounter = 0;
@@ -1061,7 +1061,7 @@ bool FFPTexturing::resolveSamplerParams( TextureUnitParams* textureUnitParams, P
 {
     bool hasError = false;
     // Resolve texture sampler parameter.       
-    Program* psProgram = programSet->getCpuFragmentProgram();
+    Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     textureUnitParams->mTextureSampler = psProgram->resolveParameter(textureUnitParams->mTextureSamplerType, textureUnitParams->mTextureSamplerIndex, (uint16)GPV_GLOBAL, "gTextureSampler");
 
     if (Ogre::RTShader::ShaderGenerator::getSingletonPtr()->IsHlsl4()) 

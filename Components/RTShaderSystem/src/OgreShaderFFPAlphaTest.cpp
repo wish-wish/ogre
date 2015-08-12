@@ -57,7 +57,7 @@ namespace Ogre {
 		//-----------------------------------------------------------------------
 		bool FFPAlphaTest::resolveParameters(ProgramSet* programSet)
 		{
-			Program* psProgram  = programSet->getCpuFragmentProgram();
+			Program* psProgram  = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 			Function* psMain = psProgram->getEntryPointFunction();
 			  
 			mPSAlphaRef = psProgram->resolveParameter(GCT_FLOAT1 ,-1, (uint16)GPV_GLOBAL, "gAlphaRef");
@@ -73,7 +73,7 @@ namespace Ogre {
 		//-----------------------------------------------------------------------
 		bool FFPAlphaTest::resolveDependencies(ProgramSet* programSet)
 		{
-			Program* psProgram = programSet->getCpuFragmentProgram();
+			Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 			psProgram->addDependency(FFP_LIB_ALPHA_TEST);
 			return true;
 		}
@@ -87,7 +87,7 @@ namespace Ogre {
 
 		bool FFPAlphaTest::addFunctionInvocations( ProgramSet* programSet )
 		{
-			Program* psProgram = programSet->getCpuFragmentProgram();
+			Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 			Function* psMain = psProgram->getEntryPointFunction();
 
 			FunctionInvocation *curFuncInvocation;

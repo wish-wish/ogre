@@ -56,7 +56,7 @@ int FFPTransform::getExecutionOrder() const
 //-----------------------------------------------------------------------
 bool FFPTransform::createCpuSubPrograms(ProgramSet* programSet)
 {
-    Program* vsProgram = programSet->getCpuVertexProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
     Function* vsEntry = vsProgram->getEntryPointFunction();
     
     // Resolve World View Projection Matrix.

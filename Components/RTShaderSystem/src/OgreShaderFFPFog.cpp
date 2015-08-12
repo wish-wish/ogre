@@ -105,8 +105,8 @@ bool FFPFog::resolveParameters(ProgramSet* programSet)
     if (mFogMode == FOG_NONE)
         return true;
 
-    Program* vsProgram = programSet->getCpuVertexProgram();
-    Program* psProgram = programSet->getCpuFragmentProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
+    Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     Function* vsMain = vsProgram->getEntryPointFunction();
     Function* psMain = psProgram->getEntryPointFunction();
     bool hasError = false;
@@ -177,8 +177,8 @@ bool FFPFog::resolveDependencies(ProgramSet* programSet)
     if (mFogMode == FOG_NONE)
         return true;
 
-    Program* vsProgram = programSet->getCpuVertexProgram();
-    Program* psProgram = programSet->getCpuFragmentProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
+    Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 
     vsProgram->addDependency(FFP_LIB_FOG);
     psProgram->addDependency(FFP_LIB_COMMON);
@@ -199,8 +199,8 @@ bool FFPFog::addFunctionInvocations(ProgramSet* programSet)
     if (mFogMode == FOG_NONE)
         return true;
 
-    Program* vsProgram = programSet->getCpuVertexProgram();
-    Program* psProgram = programSet->getCpuFragmentProgram();
+    Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
+    Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
     Function* vsMain = vsProgram->getEntryPointFunction();
     Function* psMain = psProgram->getEntryPointFunction();
     FunctionInvocation* curFuncInvocation = NULL;   

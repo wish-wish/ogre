@@ -43,8 +43,8 @@ namespace RTShader {
 
 	bool TriplanarTexturing::resolveParameters(ProgramSet* programSet)
 	{
-		Program* vsProgram = programSet->getCpuVertexProgram();
-		Program* psProgram = programSet->getCpuFragmentProgram();
+		Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
+		Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 		Function* vsMain = vsProgram->getEntryPointFunction();
 		Function* psMain = psProgram->getEntryPointFunction();
 
@@ -119,7 +119,7 @@ namespace RTShader {
     bool TriplanarTexturing::resolveDependencies(ProgramSet* programSet)
     {
         Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
-        Program* vsProgram = programSet->getCpuVertexProgram();
+        Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
 		psProgram->addDependency(FFP_LIB_TEXTURING);
         psProgram->addDependency("SGXLib_TriplanarTexturing");
         vsProgram->addDependency(FFP_LIB_COMMON);
@@ -131,7 +131,7 @@ namespace RTShader {
 	{
         Program* psProgram = programSet->getCpuProgram(GPT_FRAGMENT_PROGRAM);
 		Function* psMain = psProgram->getEntryPointFunction();
-		Program* vsProgram = programSet->getCpuVertexProgram();
+		Program* vsProgram = programSet->getCpuProgram(GPT_VERTEX_PROGRAM);
 		Function* vsMain = vsProgram->getEntryPointFunction();
         bool isHLSL = ShaderGenerator::getSingleton().getTargetLanguage() == "hlsl";
 		int internalCounter = 0;
