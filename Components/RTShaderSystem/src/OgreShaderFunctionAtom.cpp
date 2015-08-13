@@ -247,6 +247,13 @@ void FunctionInvocation::writeSourceCode(std::ostream& os, const String& targetL
 //-----------------------------------------------------------------------
 void FunctionInvocation::pushOperand(ParameterPtr parameter, Operand::OpSemantic opSemantic, int opMask, int indirectionLevel)
 {
+    if (parameter.isNull())
+    {
+        OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+            "Null operand is illegal",
+            "FunctionInvocation::pushOperand");
+    }
+       
     mOperands.push_back(Operand(parameter, opSemantic, opMask, indirectionLevel));
 }
 
