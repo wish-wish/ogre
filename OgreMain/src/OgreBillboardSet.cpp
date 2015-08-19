@@ -802,6 +802,10 @@ namespace Ogre {
         offset += VertexElement::getTypeSize(VET_FLOAT3);
         decl->addElement(0, offset, VET_COLOUR, VES_DIFFUSE);
         offset += VertexElement::getTypeSize(VET_COLOUR);
+
+        decl->addElement(0, offset, VET_FLOAT3 , VES_NORMAL);
+        offset += VertexElement::getTypeSize(VET_FLOAT3);
+
         // Texture coords irrelevant when enabled point rendering (generated
         // in point sprite mode, and unused in standard point mode)
         if (!mPointRendering)
@@ -1155,6 +1159,11 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal        
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+        
             // No texture coords in point rendering
         }
         else if (mAllDefaultRotation || bb.mRotation == Radian(0))
@@ -1170,6 +1179,10 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
             // Texture coords
             *mLockPtr++ = r.left;
             *mLockPtr++ = r.top;
@@ -1185,6 +1198,10 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
             // Texture coords
             *mLockPtr++ = r.right;
             *mLockPtr++ = r.top;
@@ -1200,6 +1217,10 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
             // Texture coords
             *mLockPtr++ = r.left;
             *mLockPtr++ = r.bottom;
@@ -1215,6 +1236,11 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+
             // Texture coords
             *mLockPtr++ = r.right;
             *mLockPtr++ = r.bottom;
@@ -1241,6 +1267,11 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
             // Texture coords
             *mLockPtr++ = r.left;
             *mLockPtr++ = r.top;
@@ -1257,6 +1288,12 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+
             // Texture coords
             *mLockPtr++ = r.right;
             *mLockPtr++ = r.top;
@@ -1273,6 +1310,11 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            
             // Texture coords
             *mLockPtr++ = r.left;
             *mLockPtr++ = r.bottom;
@@ -1289,6 +1331,12 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+
             // Texture coords
             *mLockPtr++ = r.right;
             *mLockPtr++ = r.bottom;
@@ -1319,6 +1367,10 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
             // Texture coords
             *mLockPtr++ = mid_u - cos_rot_w + sin_rot_h;
             *mLockPtr++ = mid_v - sin_rot_w - cos_rot_h;
@@ -1334,6 +1386,12 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+
+            //Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+
             // Texture coords
             *mLockPtr++ = mid_u + cos_rot_w + sin_rot_h;
             *mLockPtr++ = mid_v + sin_rot_w - cos_rot_h;
@@ -1349,6 +1407,11 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+
             // Texture coords
             *mLockPtr++ = mid_u - cos_rot_w - sin_rot_h;
             *mLockPtr++ = mid_v - sin_rot_w + cos_rot_h;
@@ -1364,6 +1427,11 @@ namespace Ogre {
             *pCol++ = colour;
             // Update lock pointer
             mLockPtr = static_cast<float*>(static_cast<void*>(pCol));
+            // Normal
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            *mLockPtr++ = 0.0;
+            
             // Texture coords
             *mLockPtr++ = mid_u + cos_rot_w - sin_rot_h;
             *mLockPtr++ = mid_v + sin_rot_w + cos_rot_h;
