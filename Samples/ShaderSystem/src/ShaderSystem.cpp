@@ -700,128 +700,125 @@ void Sample_ShaderSystem::updateSystemShaders()
 //-----------------------------------------------------------------------
 void Sample_ShaderSystem::generateShaders(Entity* entity)
 {
-    for (unsigned int i=0; i < entity->getNumSubEntities(); ++i)
-    {
-        SubEntity* curSubEntity = entity->getSubEntity(i);
-        const String& curMaterialName = curSubEntity->getMaterialName();
-        bool success;
+	for (unsigned int i = 0; i < entity->getNumSubEntities(); ++i)
+	{
+		SubEntity* curSubEntity = entity->getSubEntity(i);
+		const String& curMaterialName = curSubEntity->getMaterialName();
 
-        // Create the shader based technique of this material.
-        success = mShaderGenerator->createShaderBasedTechnique(curMaterialName, 
-                            MaterialManager::DEFAULT_SCHEME_NAME,
-                            RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+		// Create the shader based technique of this material.
+		mShaderGenerator->createShaderBasedTechnique(curMaterialName,
+			MaterialManager::DEFAULT_SCHEME_NAME,
+			RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
-        
-        // Setup custom shader sub render states according to current setup.
-        if (success)
-        {                   
-            MaterialPtr curMaterial = MaterialManager::getSingleton().getByName(curMaterialName);
-            Pass* curPass = curMaterial->getTechnique(0)->getPass(0);
 
-            if (mSpecularEnable)
-            {
-                curPass->setSpecular(ColourValue::White);
-                curPass->setShininess(32.0);
-            }
-            else
-            {
-                curPass->setSpecular(ColourValue::Black);
-                curPass->setShininess(0.0);
-            }
-            
+		// Setup custom shader sub render states according to current setup.
 
-            // Grab the first pass render state. 
-            // NOTE: For more complicated samples iterate over the passes and build each one of them as desired.
-            RTShader::RenderState* renderState = mShaderGenerator->getRenderState(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, curMaterialName, 0);
+		MaterialPtr curMaterial = MaterialManager::getSingleton().getByName(curMaterialName);
+		Pass* curPass = curMaterial->getTechnique(0)->getPass(0);
 
-            // Remove all sub render states.
-            renderState->reset();
+		if (mSpecularEnable)
+		{
+			curPass->setSpecular(ColourValue::White);
+			curPass->setShininess(32.0);
+		}
+		else
+		{
+			curPass->setSpecular(ColourValue::Black);
+			curPass->setShininess(0.0);
+		}
+
+
+		// Grab the first pass render state. 
+		// NOTE: For more complicated samples iterate over the passes and build each one of them as desired.
+		RTShader::RenderState* renderState = mShaderGenerator->getRenderState(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, curMaterialName, 0);
+
+		// Remove all sub render states.
+		renderState->reset();
 
 
 #ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
-            if (mCurLightingModel == SSLM_PerVertexLighting)
-            {
-                RTShader::SubRenderState* perPerVertexLightModel = mShaderGenerator->createSubRenderState(RTShader::FFPLighting::Type);
+		if (mCurLightingModel == SSLM_PerVertexLighting)
+		{
+			RTShader::SubRenderState* perPerVertexLightModel = mShaderGenerator->createSubRenderState(RTShader::FFPLighting::Type);
 
-                renderState->addTemplateSubRenderState(perPerVertexLightModel); 
-            }
+			renderState->addTemplateSubRenderState(perPerVertexLightModel);
+		}
 #endif
 
 #ifdef RTSHADER_SYSTEM_BUILD_EXT_SHADERS
-            else if (mCurLightingModel == SSLM_PerPixelLighting)
-            {
-                RTShader::SubRenderState* perPixelLightModel = mShaderGenerator->createSubRenderState(RTShader::PerPixelLighting::Type);
-                
-                renderState->addTemplateSubRenderState(perPixelLightModel);             
-            }
-            else if (mCurLightingModel == SSLM_NormalMapLightingTangentSpace)
-            {
-                // Apply normal map only on main entity.
-                if (entity->getName() == MAIN_ENTITY_NAME)
-                {
-                    RTShader::SubRenderState* subRenderState = mShaderGenerator->createSubRenderState(RTShader::NormalMapLighting::Type);
-                    RTShader::NormalMapLighting* normalMapSubRS = static_cast<RTShader::NormalMapLighting*>(subRenderState);
-                    
-                    normalMapSubRS->setNormalMapSpace(RTShader::NormalMapLighting::NMS_TANGENT);
-                    normalMapSubRS->setNormalMapTextureName("Panels_Normal_Tangent.png");   
+		else if (mCurLightingModel == SSLM_PerPixelLighting)
+		{
+			RTShader::SubRenderState* perPixelLightModel = mShaderGenerator->createSubRenderState(RTShader::PerPixelLighting::Type);
 
-                    renderState->addTemplateSubRenderState(normalMapSubRS);
-                }
+			renderState->addTemplateSubRenderState(perPixelLightModel);
+		}
+		else if (mCurLightingModel == SSLM_NormalMapLightingTangentSpace)
+		{
+			// Apply normal map only on main entity.
+			if (entity->getName() == MAIN_ENTITY_NAME)
+			{
+				RTShader::SubRenderState* subRenderState = mShaderGenerator->createSubRenderState(RTShader::NormalMapLighting::Type);
+				RTShader::NormalMapLighting* normalMapSubRS = static_cast<RTShader::NormalMapLighting*>(subRenderState);
 
-                // It is secondary entity -> use simple per pixel lighting.
-                else
-                {
-                    RTShader::SubRenderState* perPixelLightModel = mShaderGenerator->createSubRenderState(RTShader::PerPixelLighting::Type);
-                    renderState->addTemplateSubRenderState(perPixelLightModel);
-                }               
-            }
-            else if (mCurLightingModel == SSLM_NormalMapLightingObjectSpace)
-            {
-                // Apply normal map only on main entity.
-                if (entity->getName() == MAIN_ENTITY_NAME)
-                {
-                    RTShader::SubRenderState* subRenderState = mShaderGenerator->createSubRenderState(RTShader::NormalMapLighting::Type);
-                    RTShader::NormalMapLighting* normalMapSubRS = static_cast<RTShader::NormalMapLighting*>(subRenderState);
-                
-                    normalMapSubRS->setNormalMapSpace(RTShader::NormalMapLighting::NMS_OBJECT);
-                    normalMapSubRS->setNormalMapTextureName("Panels_Normal_Obj.png");   
+				normalMapSubRS->setNormalMapSpace(RTShader::NormalMapLighting::NMS_TANGENT);
+				normalMapSubRS->setNormalMapTextureName("Panels_Normal_Tangent.png");
 
-                    renderState->addTemplateSubRenderState(normalMapSubRS);
-                }
-                
-                // It is secondary entity -> use simple per pixel lighting.
-                else
-                {
-                    RTShader::SubRenderState* perPixelLightModel = mShaderGenerator->createSubRenderState(RTShader::PerPixelLighting::Type);
-                    renderState->addTemplateSubRenderState(perPixelLightModel);
-                }               
-            }
+				renderState->addTemplateSubRenderState(normalMapSubRS);
+			}
+
+			// It is secondary entity -> use simple per pixel lighting.
+			else
+			{
+				RTShader::SubRenderState* perPixelLightModel = mShaderGenerator->createSubRenderState(RTShader::PerPixelLighting::Type);
+				renderState->addTemplateSubRenderState(perPixelLightModel);
+			}
+		}
+		else if (mCurLightingModel == SSLM_NormalMapLightingObjectSpace)
+		{
+			// Apply normal map only on main entity.
+			if (entity->getName() == MAIN_ENTITY_NAME)
+			{
+				RTShader::SubRenderState* subRenderState = mShaderGenerator->createSubRenderState(RTShader::NormalMapLighting::Type);
+				RTShader::NormalMapLighting* normalMapSubRS = static_cast<RTShader::NormalMapLighting*>(subRenderState);
+
+				normalMapSubRS->setNormalMapSpace(RTShader::NormalMapLighting::NMS_OBJECT);
+				normalMapSubRS->setNormalMapTextureName("Panels_Normal_Obj.png");
+
+				renderState->addTemplateSubRenderState(normalMapSubRS);
+			}
+
+			// It is secondary entity -> use simple per pixel lighting.
+			else
+			{
+				RTShader::SubRenderState* perPixelLightModel = mShaderGenerator->createSubRenderState(RTShader::PerPixelLighting::Type);
+				renderState->addTemplateSubRenderState(perPixelLightModel);
+			}
+		}
 
 #endif
-            if (mReflectionMapEnable)
-            {               
-                RTShader::SubRenderState* subRenderState = mShaderGenerator->createSubRenderState(ShaderExReflectionMap::Type);
-                ShaderExReflectionMap* reflectionMapSubRS = static_cast<ShaderExReflectionMap*>(subRenderState);
-            
-                reflectionMapSubRS->setReflectionMapType(TEX_TYPE_CUBE_MAP);
-                reflectionMapSubRS->setReflectionPower(mReflectionPowerSlider->getValue());
+		if (mReflectionMapEnable)
+		{
+			RTShader::SubRenderState* subRenderState = mShaderGenerator->createSubRenderState(ShaderExReflectionMap::Type);
+			ShaderExReflectionMap* reflectionMapSubRS = static_cast<ShaderExReflectionMap*>(subRenderState);
 
-                // Setup the textures needed by the reflection effect.
-                reflectionMapSubRS->setMaskMapTextureName("Panels_refmask.png");    
-                reflectionMapSubRS->setReflectionMapTextureName("cubescene.jpg");
-                                            
-                renderState->addTemplateSubRenderState(subRenderState);
-                mReflectionMapSubRS = subRenderState;               
-            }
-            else
-            {
-                mReflectionMapSubRS = NULL;
-            }
-                                
-            // Invalidate this material in order to re-generate its shaders.
-            mShaderGenerator->invalidateMaterial(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, curMaterialName);
-        }       
-    }
+			reflectionMapSubRS->setReflectionMapType(TEX_TYPE_CUBE_MAP);
+			reflectionMapSubRS->setReflectionPower(mReflectionPowerSlider->getValue());
+
+			// Setup the textures needed by the reflection effect.
+			reflectionMapSubRS->setMaskMapTextureName("Panels_refmask.png");
+			reflectionMapSubRS->setReflectionMapTextureName("cubescene.jpg");
+
+			renderState->addTemplateSubRenderState(subRenderState);
+			mReflectionMapSubRS = subRenderState;
+		}
+		else
+		{
+			mReflectionMapSubRS = NULL;
+		}
+
+		// Invalidate this material in order to re-generate its shaders.
+		mShaderGenerator->invalidateMaterial(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, curMaterialName);
+	}
 }
 
 //-----------------------------------------------------------------------
@@ -1170,32 +1167,28 @@ void Sample_ShaderSystem::applyShadowType(int menuIndex)
 //-----------------------------------------------------------------------
 void Sample_ShaderSystem::exportRTShaderSystemMaterial(const String& fileName, const String& materialName)
 {
-    // Grab material pointer.
-    MaterialPtr materialPtr = MaterialManager::getSingleton().getByName(materialName);
+	// Grab material pointer.
+	MaterialPtr materialPtr = MaterialManager::getSingleton().getByName(materialName);
 
-    // Create shader based technique.
-    bool success = mShaderGenerator->createShaderBasedTechnique(materialName,
-        MaterialManager::DEFAULT_SCHEME_NAME,
-        RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+	// Create shader based technique.
+	mShaderGenerator->createShaderBasedTechnique(materialName,
+		MaterialManager::DEFAULT_SCHEME_NAME,
+		RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 
-    // Case creation of shader based technique succeeded.
-    if (success)
-    {
-        // Force shader generation of the given material.
-        RTShader::ShaderGenerator::getSingleton().validateMaterial(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, materialName);
+	// Force shader generation of the given material.
+	RTShader::ShaderGenerator::getSingleton().validateMaterial(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, materialName);
 
-        // Grab the RTSS material serializer listener.
-        MaterialSerializer::Listener* matRTSSListener = RTShader::ShaderGenerator::getSingleton().getMaterialSerializerListener();
-        MaterialSerializer matSer;
+	// Grab the RTSS material serializer listener.
+	MaterialSerializer::Listener* matRTSSListener = RTShader::ShaderGenerator::getSingleton().getMaterialSerializerListener();
+	MaterialSerializer matSer;
 
-        // Add the custom RTSS listener to the serializer.
-        // It will make sure that every custom parameter needed by the RTSS 
-        // will be added to the exported material script.
-        matSer.addListener(matRTSSListener);
+	// Add the custom RTSS listener to the serializer.
+	// It will make sure that every custom parameter needed by the RTSS 
+	// will be added to the exported material script.
+	matSer.addListener(matRTSSListener);
 
-        // Simply export the material.
-        matSer.exportMaterial(materialPtr, fileName, false, false, "", materialPtr->getName() + "_RTSS_Export");
-    }
+	// Simply export the material.
+	matSer.exportMaterial(materialPtr, fileName, false, false, "", materialPtr->getName() + "_RTSS_Export");
 }
 
 //-----------------------------------------------------------------------

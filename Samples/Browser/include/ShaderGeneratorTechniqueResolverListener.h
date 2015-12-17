@@ -56,67 +56,65 @@ namespace OgreBites
                                                       const Ogre::String& schemeName,
                                                       Ogre::Material* originalMaterial,
                                                       unsigned short lodIndex,
-                                                      const Ogre::Renderable* rend) {
-            if (schemeName != Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME)
+                                                      const Ogre::Renderable* rend)
+        {
+            
+            /**  Try Creating RTSS techinque only for:
+                    1. FFP techniques with default material manager material scheme.
+                    2. Shader generator (RTSS) default material scheme as destination.
+            */
+
+            if (schemeName == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME
+                && originalMaterial->getHasFFPTechnique(Ogre::MaterialManager::DEFAULT_SCHEME_NAME))
             {
-                return NULL;
-            }
-            // Case this is the default shader generator scheme.
+                // Create the technique
+                mShaderGenerator->createShaderBasedTechnique(
+                    originalMaterial->getName(),
+                    Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
+                    schemeName);
 
-            // Create shader generated technique for this material.
-            bool techniqueCreated = mShaderGenerator->createShaderBasedTechnique(
-                originalMaterial->getName(),
-                Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
-                schemeName);
+                // Force creating the shaders for the generated technique.
+                mShaderGenerator->validateMaterial(schemeName, originalMaterial->getName());
 
-            if (!techniqueCreated)
-            {
-                return NULL;
-            }
-            // Case technique registration succeeded.
+                // Grab the generated technique.
+                Ogre::Material::TechniqueIterator itTech = originalMaterial->getTechniqueIterator();
 
-            // Force creating the shaders for the generated technique.
-            mShaderGenerator->validateMaterial(schemeName, originalMaterial->getName());
-
-            // Grab the generated technique.
-            Ogre::Material::TechniqueIterator itTech = originalMaterial->getTechniqueIterator();
-
-            while (itTech.hasMoreElements())
-            {
-                Ogre::Technique* curTech = itTech.getNext();
-
-                if (curTech->getSchemeName() == schemeName)
+                while (itTech.hasMoreElements())
                 {
-                    return curTech;
+                    Ogre::Technique* curTech = itTech.getNext();
+
+                    if (curTech->getSchemeName() == schemeName)
+                    {
+                        return curTech;
+                    }
                 }
             }
-
             return NULL;
         }
 
-    virtual bool afterIlluminationPassesCreated(Ogre::Technique* tech)
-    {
-        if(tech->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME)
+        virtual bool afterIlluminationPassesCreated(Ogre::Technique* tech)
         {
-            Ogre::Material* mat = tech->getParent();
-            mShaderGenerator->validateMaterialIlluminationPasses(tech->getSchemeName(),
-                                                                 mat->getName(), mat->getGroup());
-            return true;
+            if (tech->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME)
+            {
+                Ogre::Material* mat = tech->getParent();
+                mShaderGenerator->validateMaterialIlluminationPasses(tech->getSchemeName(),
+                    mat->getName(), mat->getGroup());
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
 
-    virtual bool beforeIlluminationPassesCleared(Ogre::Technique* tech)
-    {
-        if(tech->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME)
+        virtual bool beforeIlluminationPassesCleared(Ogre::Technique* tech)
         {
-            Ogre::Material* mat = tech->getParent();
-            mShaderGenerator->invalidateMaterialIlluminationPasses(tech->getSchemeName(),
-                                                                   mat->getName(), mat->getGroup());
-            return true;
+            if (tech->getSchemeName() == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME)
+            {
+                Ogre::Material* mat = tech->getParent();
+                mShaderGenerator->invalidateMaterialIlluminationPasses(tech->getSchemeName(),
+                    mat->getName(), mat->getGroup());
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
 
     protected:
         Ogre::RTShader::ShaderGenerator*        mShaderGenerator;                       // The shader generator instance.

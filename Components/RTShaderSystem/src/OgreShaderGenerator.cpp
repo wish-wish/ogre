@@ -709,16 +709,16 @@ bool ShaderGenerator::hasShaderBasedTechnique(const String& materialName,
     return false;
 }
 //-----------------------------------------------------------------------------
-bool ShaderGenerator::createShaderBasedTechnique(const String& materialName, 
+void ShaderGenerator::createShaderBasedTechnique(const String& materialName, 
                                                  const String& srcTechniqueSchemeName, 
                                                  const String& dstTechniqueSchemeName,
                                                  bool overProgrammable)
 {
-    return createShaderBasedTechnique(materialName, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+    createShaderBasedTechnique(materialName, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
         srcTechniqueSchemeName, dstTechniqueSchemeName, overProgrammable);
 }
 //-----------------------------------------------------------------------------
-bool ShaderGenerator::createShaderBasedTechnique(const String& materialName, 
+void ShaderGenerator::createShaderBasedTechnique(const String& materialName, 
                                                  const String& groupName, 
                                                  const String& srcTechniqueSchemeName, 
                                                  const String& dstTechniqueSchemeName,
@@ -726,10 +726,10 @@ bool ShaderGenerator::createShaderBasedTechnique(const String& materialName,
 {
     OGRE_LOCK_AUTO_MUTEX;
 
-    // Make sure material exists.
     MaterialPtr srcMat = MaterialManager::getSingleton().getByName(materialName, groupName);
     if (srcMat.isNull() == true)
-        return false;
+        OGRE_EXCEPT(Exception::ERR_INVALID_STATE, "Source material does not exist."
+            , "ShaderGenerator::createShaderBasedTechnique");
 
     // Update group name in case it is AUTODETECT_RESOURCE_GROUP_NAME
     const String& trueGroupName = srcMat->getGroup();
@@ -738,7 +738,8 @@ bool ShaderGenerator::createShaderBasedTechnique(const String& materialName,
     if (trueGroupName != groupName && 
         groupName != ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)
     {
-        return false;
+        OGRE_EXCEPT(Exception::ERR_INVALID_STATE, "Could not create technique"
+            , "ShaderGenerator::createShaderBasedTechnique");
     }
         
     SGMaterialIterator itMatEntry = findMaterialEntryIt(materialName, trueGroupName);
@@ -755,16 +756,13 @@ bool ShaderGenerator::createShaderBasedTechnique(const String& materialName,
             if ((*itTechEntry)->getSourceTechnique()->getSchemeName() == srcTechniqueSchemeName &&
                 (*itTechEntry)->getDestinationTechniqueSchemeName() == dstTechniqueSchemeName)
             {
-                return true;
+                return;
             }
-
-
-            // Case a shader based technique with the same scheme name already defined based 
-            // on different source technique. 
             // This state might lead to conflicts during shader generation - we prevent it by returning false here.
             else if ((*itTechEntry)->getDestinationTechniqueSchemeName() == dstTechniqueSchemeName)
             {
-                return false;
+                OGRE_EXCEPT(Exception::ERR_INVALID_STATE, "A shader based technique with the same scheme name already defined based\non a different source technique."
+                    , "ShaderGenerator::createShaderBasedTechnique");
             }           
         }
     }
@@ -773,10 +771,10 @@ bool ShaderGenerator::createShaderBasedTechnique(const String& materialName,
     Technique* srcTechnique = NULL;
     srcTechnique = findSourceTechnique(materialName, trueGroupName, srcTechniqueSchemeName, overProgrammable);
 
-    // No appropriate source technique found.
     if (srcTechnique == NULL)
     {
-        return false;
+        OGRE_EXCEPT(Exception::ERR_INVALID_STATE, "No appropriate source technique found."
+            , "ShaderGenerator::createShaderBasedTechnique");
     }
 
 
@@ -807,8 +805,6 @@ bool ShaderGenerator::createShaderBasedTechnique(const String& materialName,
     // Add to scheme.
     SGScheme* schemeEntry = createOrRetrieveScheme(dstTechniqueSchemeName).first;
     schemeEntry->addTechniqueEntry(techEntry);
-        
-    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -990,36 +986,36 @@ bool ShaderGenerator::cloneShaderBasedTechniques(const String& srcMaterialName,
         {
             String srcFromTechniqueScheme = (*itTechEntry)->getSourceTechnique()->getSchemeName();
             String srcToTechniqueScheme = (*itTechEntry)->getDestinationTechniqueSchemeName();
-            
+
             //for every technique in the source material create a shader based technique in the 
             //destination material
-            if (createShaderBasedTechnique(dstMaterialName, trueDstGroupName, srcFromTechniqueScheme, srcToTechniqueScheme))
+            createShaderBasedTechnique(dstMaterialName, trueDstGroupName, srcFromTechniqueScheme, srcToTechniqueScheme);
+
+            //check for custom render states in the source material
+            unsigned short passCount = (*itTechEntry)->getSourceTechnique()->getNumPasses();
+            for (unsigned short pi = 0; pi < passCount; ++pi)
             {
-                //check for custom render states in the source material
-                unsigned short passCount =  (*itTechEntry)->getSourceTechnique()->getNumPasses();
-                for(unsigned short pi = 0 ; pi < passCount ; ++pi)
+                if ((*itTechEntry)->hasRenderState(pi))
                 {
-                    if ((*itTechEntry)->hasRenderState(pi))
+                    //copy the custom render state from the source material to the destination material
+                    RenderState* srcRenderState = (*itTechEntry)->getRenderState(pi);
+                    RenderState* dstRenderState = getRenderState(srcToTechniqueScheme, dstMaterialName, trueDstGroupName, pi);
+
+                    const SubRenderStateList& srcSubRenderState =
+                        srcRenderState->getTemplateSubRenderStateList();
+
+                    SubRenderStateList::const_iterator itSubState = srcSubRenderState.begin(),
+                        itSubStateEnd = srcSubRenderState.end();
+                    for (; itSubState != itSubStateEnd; ++itSubState)
                     {
-                        //copy the custom render state from the source material to the destination material
-                        RenderState* srcRenderState = (*itTechEntry)->getRenderState(pi);
-                        RenderState* dstRenderState = getRenderState(srcToTechniqueScheme, dstMaterialName, trueDstGroupName, pi);
-
-                        const SubRenderStateList& srcSubRenderState = 
-                            srcRenderState->getTemplateSubRenderStateList();
-
-                        SubRenderStateList::const_iterator itSubState = srcSubRenderState.begin(),
-                            itSubStateEnd = srcSubRenderState.end();
-                        for(;itSubState != itSubStateEnd ; ++itSubState)
-                        {
-                            SubRenderState* srcSubState = *itSubState;
-                            SubRenderState* dstSubState = createSubRenderState(srcSubState->getType());
-                            (*dstSubState) = (*srcSubState);
-                            dstRenderState->addTemplateSubRenderState(dstSubState);
-                        }
+                        SubRenderState* srcSubState = *itSubState;
+                        SubRenderState* dstSubState = createSubRenderState(srcSubState->getType());
+                        (*dstSubState) = (*srcSubState);
+                        dstRenderState->addTemplateSubRenderState(dstSubState);
                     }
                 }
             }
+
         }
     }
 

@@ -331,7 +331,7 @@ public:
     @param dstTechniqueSchemeName The destination shader based technique scheme name.
     @param overProgrammable If true a shader will be created even if the material has shaders
     */
-    bool createShaderBasedTechnique(const String& materialName, const String& srcTechniqueSchemeName, const String& dstTechniqueSchemeName, bool overProgrammable = false);
+    void createShaderBasedTechnique(const String& materialName, const String& srcTechniqueSchemeName, const String& dstTechniqueSchemeName, bool overProgrammable = false);
 
     /**
      Create shader based technique from a given technique.
@@ -343,7 +343,7 @@ public:
      @param dstTechniqueSchemeName The destination shader based technique scheme name.
      @param overProgrammable If true a shader will be created even if the material has shaders
      */
-    bool createShaderBasedTechnique(const String& materialName, const String& groupName, const String& srcTechniqueSchemeName, const String& dstTechniqueSchemeName, bool overProgrammable = false);
+    void createShaderBasedTechnique(const String& materialName, const String& groupName, const String& srcTechniqueSchemeName, const String& dstTechniqueSchemeName, bool overProgrammable = false);
 
 
     /** 
