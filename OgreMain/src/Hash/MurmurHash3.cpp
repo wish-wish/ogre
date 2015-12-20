@@ -151,6 +151,18 @@ void _OgreExport MurmurHash3_x86_32 ( const void * key, const int len,
 } 
 
 //-----------------------------------------------------------------------------
+void _OgreExport MurmurHash3_128(const void * key, int len, uint32_t seed, void * out)
+{
+#if OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_32
+    MurmurHash3_x86_128(key, len, seed, out);
+#elif OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_64
+    MurmurHash3_x64_128(key, len, seed, out);
+#else
+    //#error Unknown architecture.
+#endif
+}
+
+//-----------------------------------------------------------------------------
 
 void _OgreExport MurmurHash3_x86_128 ( const void * key, const int len,
                            uint32_t seed, void * out )
